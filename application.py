@@ -37,7 +37,7 @@ def editCompanies(company_id):
             editCompany.name = request.form['name']
         session.add(editCompany)
         session.commit()
-        flash("Company has been edited")
+        flash("%s has been edited"% editCompany.name)
         return redirect(url_for('showCompanies'))
     else:
         return render_template('editCompany.html', company_id = company_id, editCompany = editCompany)
@@ -48,7 +48,7 @@ def deleteCompanies(company_id):
     if request.method == 'POST':
         session.delete(deleteCompany)
         session.commit()
-        flash("Company has been deleted")
+        flash("%s has been deleted"% deleteCompany.name)
         return redirect(url_for('showCompanies'))
     else:
         return render_template('deleteCompany.html', company=deleteCompany)
@@ -84,7 +84,7 @@ def editMobilePhone(company_id , mobile_id):
             editMobile.price = request.form['price']
         session.add(editMobile)
         session.commit()
-        flash("Mobile Phone has been edited")
+        flash("%s has been edited"% editMobile.name)
         return redirect(url_for('showMobilePhones', company_id=company_id ))
     else:
         return render_template('editMobilePhone.html', company_id=company_id , mobile_id= mobile_id , editMobile=editMobile)
@@ -95,7 +95,7 @@ def deleteMobilePhone(company_id, mobile_id):
     if request.method == 'POST':
         session.delete(deleteMobile)
         session.commit()
-        flash("Mobile Phone has been Deleted")
+        flash("%s has been Deleted"% deleteMobile.name)
         return redirect(url_for('showMobilePhones', restaurant_id=restaurant_id))
     else:
         return render_template('deleteMobilePhone.html',phone=deleteMobile)

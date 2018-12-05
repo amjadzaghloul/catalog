@@ -24,6 +24,7 @@ def newCompany():
         newCompany = Company(name = request.form['name'] )
         session.add(newCompany)
         session.commit()
+        flash('New Company Created!')
         return redirect(url_for('showCompanies'))
     else:
         return render_template('newCompany.html')
@@ -36,6 +37,7 @@ def editCompanies(company_id):
             editCompany.name = request.form['name']
         session.add(editCompany)
         session.commit()
+        flash("Company has been edited")
         return redirect(url_for('showCompanies'))
     else:
         return render_template('editCompany.html', company_id = company_id, editCompany = editCompany)
@@ -46,9 +48,10 @@ def deleteCompanies(company_id):
     if request.method == 'POST':
         session.delete(deleteCompany)
         session.commit()
+        flash("Company has been deleted")
         return redirect(url_for('showCompanies'))
     else:
-        return render_template('deleteCompany.html', company_id=company_id, deleteCompany=deleteCompany)
+        return render_template('deleteCompany.html', company=deleteCompany)
 
 @app.route('/company/<int:company_id>/')
 @app.route('/company/<int:company_id>/mobilePhones/')
@@ -66,6 +69,7 @@ def newMobilePhone(company_id):
                            company_id = company_id)
         session.add(newMobile)
         session.commit()
+        flash('New Mobile Phone Created!')
         return redirect(url_for('showMobilePhones', company_id=company_id))
     else:
         return render_template('newMobilePhone.html',company_id = company_id)
@@ -80,6 +84,7 @@ def editMobilePhone(company_id , mobile_id):
             editMobile.price = request.form['price']
         session.add(editMobile)
         session.commit()
+        flash("Mobile Phone has been edited")
         return redirect(url_for('showMobilePhones', company_id=company_id ))
     else:
         return render_template('editMobilePhone.html', company_id=company_id , mobile_id= mobile_id , editMobile=editMobile)
@@ -90,9 +95,10 @@ def deleteMobilePhone(company_id, mobile_id):
     if request.method == 'POST':
         session.delete(deleteMobile)
         session.commit()
+        flash("Mobile Phone has been Deleted")
         return redirect(url_for('showMobilePhones', restaurant_id=restaurant_id))
     else:
-        return render_template('deleteMobilePhone.html', company_id=deleteMobile.company_id, mobile_id=deleteMobile.id , deleteMobile=deleteMobile)
+        return render_template('deleteMobilePhone.html',phone=deleteMobile)
 
 @app.route('/home/JSON')
 def companiesJSON():

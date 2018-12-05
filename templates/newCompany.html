@@ -1,0 +1,14 @@
+<html>
+<body>
+<h1>New Company</h1>
+<form action="{{url_for('newCompany')}}" method = 'POST'>
+
+<P>name:</P>
+
+<input type='text' size='30' name='name'>
+
+<input type='submit' value='Create'>
+</form>
+<a href= '{{url_for('showCompanies')}}'>Cancel</a>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<html>
+<head>
+<body>
+<h1>Edit Mobile Phone {{editMobile.name}}</h1>
+<form action= "{{ url_for('editMobilePhone' , company_id = company_id , mobile_id = mobile_id) }}" method = 'POST'>
+
+<p>Name:</p>
+<input type = 'text' size='30' name = 'name' placeholder="{{editMobile.name}}">
+<p>Specifications:</p>
+<input type = 'text' size='30' name = 'Specifications' placeholder="{{editMobile.Specifications}}">
+<p>Price:</p>
+<input type = 'text' size='30' name = 'price' placeholder="{{editMobile.price}}">
+<br><br>
+<input type='submit' value='Edit'>
+</form>
+<a href= '{{url_for('showMobilePhones', company_id = company_id)}}'>Cancel</a>
+</body>
+
+
+</body>
+</html>

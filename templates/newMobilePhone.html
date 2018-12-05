@@ -1,0 +1,18 @@
+<html>
+<head>
+<body>
+<h1>New Mobile Phone</h1>
+<form action="{{url_for('newMobilePhone', company_id=company_id )}}" method = 'POST'>
+    <p>name:</p>
+    <input type='text' size='30' name='name'>
+    <p>Specifications:</p>
+    <input type='text' size='30' name='Specifications'>
+    <p>price:</p>
+    <input type='text' size='30' name='price'>
+    <br>
+    <br>
+    <input type='submit' value='Create'>
+</form>
+<a href= '{{url_for('showMobilePhones', company_id = company_id)}}'>Cancel</a>
+</body>
+</html>

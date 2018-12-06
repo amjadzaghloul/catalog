@@ -1,5 +1,12 @@
 <html>
+<header>
+    <a href='{{url_for("showLogin")}}'><h2>Login</h2></a>
+</header>
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+	</head>
 <body>
+
 <h1>Mobile Phone Companies</h1>
 
 {% with messages = get_flashed_messages() %}
@@ -14,15 +21,13 @@
 {% endwith %}
 
 <a href = '{{url_for('newCompany') }}'>
-Create New Restaurant</a>
+Create New Company</a>
 <br><br>
     {% for i in company %}
     <div>
         <a href='{{url_for("showMobilePhones", company_id = i.id,)}}'><h2>{{i.name}}</h2></a>
-        <br>
-        <a href='{{url_for('editCompanies' , company_id = i.id) }}'>Edit</a>
-        <br>
-    <a href="{{url_for('deleteCompanies' , company_id = i.id) }}">Delete</a>
+        <a href='{{url_for('editCompanies' , company_id = i.id) }}'><h3>Edit</h3></a>
+        <a href="{{url_for('deleteCompanies' , company_id = i.id) }}"><h3>Delete</h3></a>
     <br><br>
     {% endfor%}
 

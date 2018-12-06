@@ -1,4 +1,7 @@
 <html>
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+	</head>
 <body>
 
 <h1>{{ company.name }}</h1>
@@ -23,9 +26,8 @@ Create New Mobile Phone</a>
     <p>{{mobilePhone.name}}</p>
     <p>{{mobilePhone.Specifications}}</p>
     <p>{{mobilePhone.price}}</p>
-    <a href='{{url_for('editMobilePhone' , company_id = company_id , mobile_id = mobilePhone.id) }}'>Edit</a>
-    <br>
-    <a href='{{url_for('deleteMobilePhone' , company_id = company_id , mobile_id = mobilePhone.id) }}'>delete</a>
+    <a href='{{url_for('editMobilePhone' , company_id = company_id , mobile_id = mobilePhone.id) }}'><h3>Edit</h3></a>
+    <a href='{{url_for('deleteMobilePhone' , company_id = company_id , mobile_id = mobilePhone.id) }}'><h3>delete</h3></a>
     <br><br>
 </div>
 {% endfor %}

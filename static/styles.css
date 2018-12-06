@@ -1,0 +1,7 @@
+body {font-family: monospace; background-color: #F5F5F5 ; text-indent: 10px ;background-color: #FFEFD5 ; }
+h1 {color: #F0FFFF ; font-size: 30 ; text-align: center ;background-color: #DEB887 ; height: 8% ; font-family: "Arial Black", Gadget, sans-serif}
+h2 {color: #000000 ; font-size: 25 }
+p {font-size:20 }
+a {text-decoration: none ; font-size: 25 ; color: red}
+input {width: 25% ; padding: 12px 20px;}
+h3 {text-decoration: none; color: red; font-size: 15; border-radius: 5px; border: 2px solid #808080; padding: 1px; width: 65px; height: 18px:;}

@@ -115,8 +115,39 @@ def gconnect():
     print "done!"
     return output
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    access_token = login_session.get('access_token')
+    if access_token is None:
+        print 'Access Token is None'
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    print 'In gdisconnect access token is %s', access_token
+    print 'User name is: '
+    print login_session['username']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print 'result is '
+    print result
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
 @app.route('/')
-@app.route('/home/')
+@app.route('/company/')
 def showCompanies():
     company = session.query(Company).all()
 
@@ -124,6 +155,8 @@ def showCompanies():
 
 @app.route('/company/new/', methods = ['GET','POST'])
 def newCompany():
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         newCompany = Company(name = request.form['name'] )
         session.add(newCompany)
@@ -135,6 +168,8 @@ def newCompany():
 
 @app.route('/company/<int:company_id>/edit/' , methods = ['GET','POST'])
 def editCompanies(company_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     editCompany = session.query(Company).filter_by(id=company_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -148,6 +183,8 @@ def editCompanies(company_id):
 
 @app.route('/company/<int:company_id>/delete/', methods = ['GET','POST'])
 def deleteCompanies(company_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     deleteCompany = session.query(Company).filter_by(id=company_id).one()
     if request.method == 'POST':
         session.delete(deleteCompany)
@@ -166,6 +203,8 @@ def showMobilePhones(company_id):
 
 @app.route('/company/<int:company_id>/mobilePhones/new', methods = ['GET','POST'])
 def newMobilePhone(company_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         newMobile = MobilePhones(name = request.form['name'],
                            Specifications = request.form['Specifications'],
@@ -180,6 +219,8 @@ def newMobilePhone(company_id):
 
 @app.route('/company/<int:company_id>/mobilePhones/<int:mobile_id>/edit', methods=['GET','POST'])
 def editMobilePhone(company_id , mobile_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     editMobile = session.query(MobilePhones).filter_by(id=mobile_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -195,6 +236,8 @@ def editMobilePhone(company_id , mobile_id):
 
 @app.route('/company/<int:company_id>/mobilePhones/<int:mobile_id>/delete', methods=['GET','POST'])
 def deleteMobilePhone(company_id, mobile_id):
+    if 'username' not in login_session:
+        return redirect('/login')
     deleteMobile = session.query(MobilePhones).filter_by(id=mobile_id).one()
     if request.method == 'POST':
         session.delete(deleteMobile)
@@ -204,7 +247,7 @@ def deleteMobilePhone(company_id, mobile_id):
     else:
         return render_template('deleteMobilePhone.html',phone=deleteMobile)
 
-@app.route('/home/JSON')
+@app.route('/company/JSON')
 def companiesJSON():
     company = session.query(Company).all()
     return jsonify(Company=[i.serialize for i in company])

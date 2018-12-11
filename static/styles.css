@@ -5,3 +5,6 @@ p {font-size:20 }
 a {text-decoration: none ; font-size: 25 ; color: red}
 input {width: 25% ; padding: 12px 20px;}
 h3 {text-decoration: none; color: red; font-size: 15; border-radius: 5px; border: 2px solid #808080; padding: 1px; width: 65px; height: 18px:;}
+header a h2 {text-align: right;}
+
+strong {font-size: 16px; color: #DEB887; line-height: 24px; font-size: 20;}

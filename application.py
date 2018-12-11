@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for , flash, jsonify
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Company, MobilePhones, User
 
@@ -175,9 +175,11 @@ def gdisconnect():
 @app.route('/')
 @app.route('/company/')
 def showCompanies():
-    company = session.query(Company).all()
-
-    return render_template('companies.html', company=company)
+    company = session.query(Company).order_by(asc(Company.name))
+    if 'username' not in login_session:
+        return render_template('publicCompanies.html' , company=company)
+    else:
+        return render_template('companies.html', company=company)
 
 @app.route('/company/new/', methods = ['GET','POST'])
 def newCompany():
@@ -221,13 +223,16 @@ def deleteCompanies(company_id):
         return render_template('deleteCompany.html', company=deleteCompany)
 
 @app.route('/company/<int:company_id>/')
-@app.route('/company/<int:company_id>/mobilePhones/')
+@app.route('/company/<int:company_id>/mobilephones/')
 def showMobilePhones(company_id):
-    company = session.query(Company).filter_by(id = company_id).first()
-    mobilePhones = session.query(MobilePhones).filter_by(company_id = company_id)
-    return render_template("mobilePhones.html", company = company, company_id = company_id , mobilePhones=mobilePhones)
+    company = session.query(Company).filter_by(id = company_id).one()
+    mobilePhones = session.query(MobilePhones).filter_by(company_id = company_id).all()
+    if 'username' not in login_session:
+        return render_template('publicMobilePhones.html', company=company , company_id=company_id , mobilePhones=mobilePhones)
+    else:
+        return render_template("mobilePhones.html", company = company, company_id = company_id , mobilePhones=mobilePhones)
 
-@app.route('/company/<int:company_id>/mobilePhones/new', methods = ['GET','POST'])
+@app.route('/company/<int:company_id>/mobilephones/new', methods = ['GET','POST'])
 def newMobilePhone(company_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -243,7 +248,7 @@ def newMobilePhone(company_id):
     else:
         return render_template('newMobilePhone.html',company_id = company_id)
 
-@app.route('/company/<int:company_id>/mobilePhones/<int:mobile_id>/edit', methods=['GET','POST'])
+@app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/edit', methods=['GET','POST'])
 def editMobilePhone(company_id , mobile_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -260,7 +265,7 @@ def editMobilePhone(company_id , mobile_id):
     else:
         return render_template('editMobilePhone.html', company_id=company_id , mobile_id= mobile_id , editMobile=editMobile)
 
-@app.route('/company/<int:company_id>/mobilePhones/<int:mobile_id>/delete', methods=['GET','POST'])
+@app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/delete', methods=['GET','POST'])
 def deleteMobilePhone(company_id, mobile_id):
     if 'username' not in login_session:
         return redirect('/login')
@@ -278,14 +283,14 @@ def companiesJSON():
     company = session.query(Company).all()
     return jsonify(Company=[i.serialize for i in company])
 
-@app.route('/company/<int:company_id>/mobilePhones/JSON')
+@app.route('/company/<int:company_id>/mobilephones/JSON')
 def mobilePhonesJSON(company_id):
     company = session.query(Company).filter_by(id=company_id).one()
     mobilePhone = session.query(MobilePhones).filter_by(
         company_id=company_id).all()
     return jsonify(MobilePhones=[i.serialize for i in mobilePhone])
 
-@app.route('/company/<int:company_id>/mobilePhones/<int:mobile_id>/JSON')
+@app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/JSON')
 def mobileJSON(company_id, mobile_id):
     mobile = session.query(MobilePhones).filter_by(id=mobile_id).one()
     return jsonify(MobilePhones=mobile.serialize)

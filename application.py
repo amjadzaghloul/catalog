@@ -16,15 +16,18 @@ import requests
 
 app = Flask(__name__)
 
+#GConnect CLIENT_ID
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
+# Connect to Database and create database session
 engine = create_engine('sqlite:///mobilephones.db?check_same_thread=False')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# Create anti-forgery state token
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -32,18 +35,16 @@ def showLogin():
     login_session['state'] = state
     return render_template("login.html", STATE=state)
 
+# GConnect
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    # Obtain authorization code
     code = request.data
 
     try:
-        # Upgrade the authorization code into a credentials object
         oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -53,19 +54,16 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
-    # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
         response = make_response(
@@ -73,7 +71,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
@@ -89,11 +86,9 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
-    # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -120,6 +115,8 @@ def gconnect():
     print "done!"
     return output
 
+# User Helper Functions
+
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -141,6 +138,7 @@ def getUserID(email):
     except:
         return None
 
+# DISCONNECT - Revoke a current user's token and reset their login_session
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -171,7 +169,7 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
+# Show all companies
 @app.route('/')
 @app.route('/company/')
 def showCompanies():
@@ -181,6 +179,7 @@ def showCompanies():
     else:
         return render_template('companies.html', company=company)
 
+# Create a new Company
 @app.route('/company/new/', methods = ['GET','POST'])
 def newCompany():
     if 'username' not in login_session:
@@ -194,6 +193,7 @@ def newCompany():
     else:
         return render_template('newCompany.html')
 
+# Edit a company
 @app.route('/company/<int:company_id>/edit/' , methods = ['GET','POST'])
 def editCompanies(company_id):
     if 'username' not in login_session:
@@ -209,6 +209,7 @@ def editCompanies(company_id):
     else:
         return render_template('editCompany.html', company_id = company_id, editCompany = editCompany)
 
+# Delete a company
 @app.route('/company/<int:company_id>/delete/', methods = ['GET','POST'])
 def deleteCompanies(company_id):
     if 'username' not in login_session:
@@ -222,6 +223,7 @@ def deleteCompanies(company_id):
     else:
         return render_template('deleteCompany.html', company=deleteCompany)
 
+# Show a mobilePhones
 @app.route('/company/<int:company_id>/')
 @app.route('/company/<int:company_id>/mobilephones/')
 def showMobilePhones(company_id):
@@ -232,6 +234,7 @@ def showMobilePhones(company_id):
     else:
         return render_template("mobilePhones.html", company = company, company_id = company_id , mobilePhones=mobilePhones)
 
+# Create a new mobile phone
 @app.route('/company/<int:company_id>/mobilephones/new', methods = ['GET','POST'])
 def newMobilePhone(company_id):
     if 'username' not in login_session:
@@ -248,6 +251,7 @@ def newMobilePhone(company_id):
     else:
         return render_template('newMobilePhone.html',company_id = company_id)
 
+# Edit a mobile phone
 @app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/edit', methods=['GET','POST'])
 def editMobilePhone(company_id , mobile_id):
     if 'username' not in login_session:
@@ -265,6 +269,7 @@ def editMobilePhone(company_id , mobile_id):
     else:
         return render_template('editMobilePhone.html', company_id=company_id , mobile_id= mobile_id , editMobile=editMobile)
 
+# Delete a mobile phone
 @app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/delete', methods=['GET','POST'])
 def deleteMobilePhone(company_id, mobile_id):
     if 'username' not in login_session:
@@ -278,6 +283,7 @@ def deleteMobilePhone(company_id, mobile_id):
     else:
         return render_template('deleteMobilePhone.html',phone=deleteMobile)
 
+# JSON APIs to view Company Information
 @app.route('/company/JSON')
 def companiesJSON():
     company = session.query(Company).all()

@@ -220,7 +220,9 @@ def editCompanies(company_id):
         flash("%s has been edited"% editCompany.name)
         return redirect(url_for('showCompanies'))
     else:
-        return render_template('editCompany.html', company_id = company_id, editCompany = editCompany)
+        return render_template('editCompany.html',
+                               company_id = company_id,
+                               editCompany = editCompany)
 
 # Delete a company
 @app.route('/company/<int:company_id>/delete/', methods = ['GET','POST'])
@@ -243,9 +245,15 @@ def showMobilePhones(company_id):
     company = session.query(Company).filter_by(id = company_id).one()
     mobilePhones = session.query(MobilePhones).filter_by(company_id = company_id).all()
     if 'username' not in login_session:
-        return render_template('publicMobilePhones.html', company=company , company_id=company_id , mobilePhones=mobilePhones)
+        return render_template('publicMobilePhones.html',
+                               company=company ,
+                               company_id=company_id ,
+                               mobilePhones=mobilePhones)
     else:
-        return render_template("mobilePhones.html", company = company, company_id = company_id , mobilePhones=mobilePhones)
+        return render_template("mobilePhones.html",
+                               company = company,
+                               company_id = company_id ,
+                               mobilePhones=mobilePhones)
 
 # Create a new mobile phone
 @app.route('/company/<int:company_id>/mobilephones/new', methods = ['GET','POST'])
@@ -280,7 +288,10 @@ def editMobilePhone(company_id , mobile_id):
         flash("%s has been edited"% editMobile.name)
         return redirect(url_for('showMobilePhones', company_id=company_id ))
     else:
-        return render_template('editMobilePhone.html', company_id=company_id , mobile_id= mobile_id , editMobile=editMobile)
+        return render_template('editMobilePhone.html',
+                               company_id=company_id ,
+                               mobile_id= mobile_id ,
+                               editMobile=editMobile)
 
 # Delete a mobile phone
 @app.route('/company/<int:company_id>/mobilephones/<int:mobile_id>/delete', methods=['GET','POST'])

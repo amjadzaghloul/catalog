@@ -7,11 +7,11 @@
 <form action= "{{ url_for('editMobilePhone' , company_id = company_id , mobile_id = mobile_id) }}" method = 'POST'>
 
 <p>Name:</p>
-<input type = 'text' size='30' name = 'name' placeholder="{{editMobile.name}}">
+<input type = 'text' size='30' name = 'name' placeholder="{{editMobile.name}}" required>
 <p>Specifications:</p>
-<input type = 'text' size='30' name = 'Specifications' placeholder="{{editMobile.Specifications}}">
+<input type = 'text' size='30' name = 'Specifications' placeholder="{{editMobile.Specifications}}" required>
 <p>Price:</p>
-<input type = 'text' size='30' name = 'price' placeholder="{{editMobile.price}}">
+<input type = 'text' size='30' name = 'price' placeholder="{{editMobile.price}}" required>
 <br><br>
 <input type='submit' value='Edit'>
 </form>

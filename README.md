@@ -1,5 +1,4 @@
 <h1>Item Catalog</h1>
-<body>
 
 <p>A site to display specifications of mobile devices from several companies</p>
 

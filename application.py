@@ -1,4 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for , flash, jsonify
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    jsonify,
+)
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Company, MobilePhones, User
@@ -16,7 +24,7 @@ import requests
 
 app = Flask(__name__)
 
-#GConnect CLIENT_ID
+# GConnect CLIENT_ID
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 
@@ -110,7 +118,12 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px;' \
+            'height: 300px;' \
+            'border-radius: 150px;' \
+            '-webkit-border-radius: 150px;' \
+            '-moz-border-radius: 150px;"> '
+
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output

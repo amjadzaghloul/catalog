@@ -198,7 +198,8 @@ def newCompany():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newCompany = Company(name = request.form['name'] )
+        newCompany = Company(name = request.form['name'],
+                             user_id=login_session['user_id'])
         session.add(newCompany)
         session.commit()
         flash('New Company Created!')
@@ -209,9 +210,14 @@ def newCompany():
 # Edit a company
 @app.route('/company/<int:company_id>/edit/' , methods = ['GET','POST'])
 def editCompanies(company_id):
+    editCompany = session.query(Company).filter_by(id=company_id).one()
     if 'username' not in login_session:
         return redirect('/login')
-    editCompany = session.query(Company).filter_by(id=company_id).one()
+    if editCompany.user_id != login_session['user_id']:
+        return "<script>function myFunction() " \
+               "{alert('You are not authorized to edit this company." \
+               " Please create your own company in order to edit.');}" \
+               "</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             editCompany.name = request.form['name']
@@ -227,9 +233,14 @@ def editCompanies(company_id):
 # Delete a company
 @app.route('/company/<int:company_id>/delete/', methods = ['GET','POST'])
 def deleteCompanies(company_id):
+    deleteCompany = session.query(Company).filter_by(id=company_id).one()
     if 'username' not in login_session:
         return redirect('/login')
-    deleteCompany = session.query(Company).filter_by(id=company_id).one()
+    if deleteCompany.user_id != login_session['user_id']:
+        return "<script>function myFunction() " \
+               "{alert('You are not authorized to delete this company." \
+               "Please create your own company in order to delete.');}</script>" \
+               "<body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(deleteCompany)
         session.commit()
@@ -243,8 +254,9 @@ def deleteCompanies(company_id):
 @app.route('/company/<int:company_id>/mobilephones/')
 def showMobilePhones(company_id):
     company = session.query(Company).filter_by(id = company_id).one()
+    creator = getUserInfo(company.user_id)
     mobilePhones = session.query(MobilePhones).filter_by(company_id = company_id).all()
-    if 'username' not in login_session:
+    if 'username' not in login_session or creator.id != login_session['user_id']:
         return render_template('publicMobilePhones.html',
                                company=company ,
                                company_id=company_id ,
@@ -278,6 +290,12 @@ def editMobilePhone(company_id , mobile_id):
     if 'username' not in login_session:
         return redirect('/login')
     editMobile = session.query(MobilePhones).filter_by(id=mobile_id).one()
+    company = session.query(Company).filter_by(id=company_id).one()
+    if login_session['user_id'] != company.user_id:
+        return "<script>function myFunction() " \
+               "{alert('You are not authorized to edit mobile phone to this company." \
+               " Please create your own company in order to mobile phones.');}" \
+               "</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             editMobile.name = request.form['name']
@@ -299,6 +317,12 @@ def deleteMobilePhone(company_id, mobile_id):
     if 'username' not in login_session:
         return redirect('/login')
     deleteMobile = session.query(MobilePhones).filter_by(id=mobile_id).one()
+    company = session.query(Company).filter_by(id=company_id).one()
+    if login_session['user_id'] != company.user_id:
+        return "<script>function myFunction()" \
+               " {alert('You are not authorized to delete mobile phone to this company." \
+               " Please create your own company in order to delete mobile phones.');}" \
+               "</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(deleteMobile)
         session.commit()

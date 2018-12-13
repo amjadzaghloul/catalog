@@ -20,7 +20,9 @@
 {% endif %}
 {% endwith %}
 
-<br>
+<a href = '{{url_for('newCompany') }}'>
+Create New Company</a>
+<br><br>
     {% for i in company %}
     <div>
         <a href='{{url_for("showMobilePhones", company_id = i.id,)}}'><h2>{{i.name}}</h2></a>

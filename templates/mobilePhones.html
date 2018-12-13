@@ -5,8 +5,8 @@
 <header>
     <a href="http://localhost:8000/gdisconnect"><h2>Logout</h2></a>
 </header>
-<body>
 
+<body>
 
 <h1>{{ company.name }}</h1>
 <a href='{{url_for("showCompanies")}}'><h2>Back to Companies page</h2></a>
@@ -28,7 +28,7 @@ Create New Mobile Phone</a>
 <br>
 <div>
     {% for mobilePhone in mobilePhones %}
-    <p>{{mobilePhone.name}}</p>
+    <h2>{{mobilePhone.name}}</h2>
     <p>{{mobilePhone.Specifications}}</p>
     <p>{{mobilePhone.price}}</p>
     <a href='{{url_for('editMobilePhone' , company_id = company_id , mobile_id = mobilePhone.id) }}'><h3>Edit</h3></a>
